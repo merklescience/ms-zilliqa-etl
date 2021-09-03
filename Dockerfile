@@ -4,7 +4,7 @@ ENV PROJECT_DIR=zilliqa-etl
 
 RUN mkdir /$PROJECT_DIR
 WORKDIR /$PROJECT_DIR
-COPY . .
+COPY cli .
 RUN pip install --upgrade pip && pip install -e /$PROJECT_DIR/
 
 # Add Tini

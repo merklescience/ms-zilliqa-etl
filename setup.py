@@ -7,7 +7,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-long_description = read('README.md') if os.path.isfile("README.md") else ""
+long_description = read('README2.md') if os.path.isfile("README2.md") else ""
 
 setup(
     name='zilliqa-etl',
@@ -28,12 +28,10 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     keywords='Zilliqa',
-    python_requires='>=3.6.0,<3.8.0',
+    python_requires='>=3.6.0,<3.9.0',
     install_requires=[
-        'blockchain-etl-common==1.3.0',
         'click==7.0',
-        'python-dateutil==2.7.0',
-        'pyzil==1.5.22',
+        'python-dateutil==2.7.0'
     ],
     extras_require={
         'dev': [

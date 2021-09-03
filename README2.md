@@ -14,7 +14,7 @@ Install Zilliqa ETL CLI:
 pip3 install zilliqa-etl
 ```
 
-Export directory service blocks ([Schema](../docs/schema.md), [Reference](../docs/commands.md)):
+Export directory service blocks ([Schema](docs/schema.md), [Reference](docs/commands.md)):
 
 ```bash
 > zilliqaetl export_ds_blocks --start-block 1 --end-block 500000 \
