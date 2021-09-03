@@ -1,0 +1,2 @@
+{"type": "exception", "block_number": 549481, "block_timestamp": "2020-05-05 08:36:43", "transaction_id": "d2e60b481e5868cd1d3d4b2dd29b1f882570d121716c7043f576106e64bd07bc", "index": 0, "line": 48, "message": "Exception thrown: (Message [(_exception : (String \"Exception\"))])"}
+{"type": "exception", "block_number": 549481, "block_timestamp": "2020-05-05 08:36:43", "transaction_id": "d2e60b481e5868cd1d3d4b2dd29b1f882570d121716c7043f576106e64bd07bc", "index": 1, "line": 46, "message": "Raised from Exception"}

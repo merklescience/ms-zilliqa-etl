@@ -1,0 +1,38 @@
+{
+    "id": "1",
+    "jsonrpc": "2.0",
+    "result": {
+        "body": {
+            "BlockHash": "0af40c647bbaa2b82782cd5ae7bf10410e9ff1f86ec1200e00cba3193c7eae6a",
+            "HeaderSign": "01453E57C64FE39A49DDB3F57DD4C0942282F6002C47EA618EF62B3901AF0AC54322AF995915B731507A2CD4EF2D90E14F5ADE1AC67E38F22943B4AE29E0D18D",
+            "MicroBlockInfos": [
+                {
+                    "MicroBlockHash": "709557aeb26a78a01b23f2f7bd5877dc87a59591a57a2755269866bef3939df7",
+                    "MicroBlockShardId": 0,
+                    "MicroBlockTxnRootHash": "c17ce397e98b0dafae19285e344df9d9492de6cf092f3b9331fdde36ffe00a71"
+                },
+                {
+                    "MicroBlockHash": "e9a358c386cc630d9ac313cb107c27091ef51327501cdbaa11fe4c817b7ffe1a",
+                    "MicroBlockShardId": 1,
+                    "MicroBlockTxnRootHash": "fe413d42aab5234fa3ee58e8398837d35410c8c100a2ad7380d23d0fc74b6403"
+                }
+            ]
+        },
+        "header": {
+            "BlockNum": "549481",
+            "DSBlockNum": "5495",
+            "GasLimit": "175000",
+            "GasUsed": "479",
+            "MbInfoHash": "303eb6b2e9fe40f736862837421fa5b2ff8f1175cfd29248c70439909da2ade9",
+            "MinerPubKey": "0x021C03378FD496346FC297453FFB795CAEED687ED9EA34985FDFA9ABF5C6A7AE25",
+            "NumMicroBlocks": 2,
+            "NumTxns": 2,
+            "PrevBlockHash": "171216c54bc01ecdf7a3c5b757d06ed60fe5bd6a544f6d6c8ad02dc53d3fe5ba",
+            "Rewards": "479000000000",
+            "StateDeltaHash": "da3511d40442ed2edcd5471e640a382461943aaf55bcb4e971ce50316e65b0ff",
+            "StateRootHash": "d8da6fdf3e739862ee92634c605b4d5d46f5fa6a120a8fbe23ecca23e0fb520e",
+            "Timestamp": "1588667803906804",
+            "Version": 1
+        }
+    }
+}
