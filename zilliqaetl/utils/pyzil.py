@@ -1,5 +1,5 @@
-from utils import bech32
-from utils import pyzil_utils
+from zilliqaetl.utils import bech32
+from zilliqaetl.utils import pyzil_utils
 
 
 def to_int(val):
