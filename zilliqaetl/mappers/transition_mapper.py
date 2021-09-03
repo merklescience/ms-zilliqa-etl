@@ -20,7 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from zilliqaetl.utils.zilliqa_utils import to_int, json_dumps, iso_datetime_string, encode_bench32_address
+from zilliqaetl.utils.zilliqa_utils import to_int, encode_bench32_address
+import json
+
+req_params = ["from", "to", "amount", "initiator"]
+
+
+def convert_params(params: list) -> dict:
+    di_obj = {}
+    for elem in params:
+        elem = json.loads(elem)
+        if elem["vname"] in req_params:
+            di_obj[elem["vname"]] = elem["value"]
+    if all(param in di_obj.keys() for param in req_params):
+        di_obj["token_amount"] = di_obj.pop("amount")
+        return di_obj
+    else:
+        return {"from": None, "to": None, "token_amount": None, "initiator": None}
 
 
 def map_transitions(tx_block, txn):
@@ -40,5 +56,5 @@ def map_transitions(tx_block, txn):
                 'amount': to_int(msg.get('_amount')),
                 'recipient': encode_bench32_address(msg.get('_recipient')),
                 'tag': msg.get('_tag'),
-                'params': [json_dumps(param) for param in msg.get('params')],
+                **convert_params(msg.get('params'))
             }

@@ -15,10 +15,14 @@ common utils
 # import string
 # import secrets
 # from typing import Union, Optional
-
+import hashlib
 
 TOKEN_NUM_BYTES = 32
 TOKEN_STR_LENGTH = TOKEN_NUM_BYTES * 2
+
+# zilliqa address takes the last 20 bytes from hash digest of public key
+ADDRESS_NUM_BYTES = 20
+ADDRESS_STR_LENGTH = ADDRESS_NUM_BYTES * 2
 
 
 # def randbelow(exclusive_upper_bound: int) -> int:
@@ -52,9 +56,9 @@ def hex_str_to_bytes(str_hex: str) -> bytes:
     return bytes.fromhex(str_hex)
 
 
-# def bytes_to_hex_str(bytes_hex: bytes, prefix="") -> str:
-#     """Convert bytes to hex string."""
-#     return prefix + bytes_hex.hex()
+def bytes_to_hex_str(bytes_hex: bytes, prefix="") -> str:
+    """Convert bytes to hex string."""
+    return prefix + bytes_hex.hex()
 
 
 # def int_to_bytes(i: int, n_bytes: Optional[int]=TOKEN_NUM_BYTES,
@@ -91,3 +95,12 @@ def hex_str_to_int(str_hex: str, byteorder="big") -> int:
 #         raise TypeError("Type bytes required")
 #
 #     return str_or_bytes
+
+def hash256_bytes(*bytes_hex, encoding="utf-8") -> bytes:
+    """Return hash256 digest bytes."""
+    m = hashlib.sha256()
+    for b in bytes_hex:
+        if isinstance(b, str):
+            b = b.encode(encoding=encoding)
+        m.update(b)
+    return m.digest()
