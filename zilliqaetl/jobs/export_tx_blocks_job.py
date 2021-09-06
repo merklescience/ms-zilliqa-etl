@@ -71,6 +71,7 @@ class ExportTxBlocksJob(BaseJob):
         )
 
     def _export_batch(self, block_number_batch):
+        # TODO : Add coin prices here and bifurcate traces and token transfer
         items = []
         for number in block_number_batch:
             tx_block = map_tx_block(self.zilliqa_service.get_tx_block(number))

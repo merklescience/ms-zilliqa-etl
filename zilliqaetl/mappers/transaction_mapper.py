@@ -19,28 +19,25 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from pyzil.account import Account
-
-from zilliqaetl.utils.zilliqa_utils import to_int, iso_datetime_string, encode_bench32_pub_key, encode_bench32_address
 
 
+from zilliqaetl.utils.zilliqa_utils import to_int, encode_bench32_pub_key, encode_bench32_address
+
+
+# Modified acc to MS use case
 def map_transaction(tx_block, txn):
     block = {
         'type': 'transaction',
-        'id': txn.get('ID'),
+        'hash': '0x' + txn.get('ID'),  # TODO: Confirm if we have to add 0x at this stage or not
         'block_number': tx_block.get('number'),
         'block_timestamp': tx_block.get('timestamp'),
-        'amount': to_int(txn.get('amount')),
-        'code': txn.get('code'),
-        'data': txn.get('data'),
-        'gas_limit': to_int(txn.get('gasLimit')),
+        "block_hash": '',  # TODO: Check if we can skip sending
+        "input": '',  # TODO: Check if we can skip sending
+        'value': to_int(txn.get('amount')),
         'gas_price': to_int(txn.get('gasPrice')),
         'nonce': to_int(txn.get('nonce')),
-        'sender_pub_key': txn.get('senderPubKey'),
-        'sender': encode_bench32_pub_key(txn.get('senderPubKey')),
-        'signature': txn.get('signature'),
-        'to_addr': encode_bench32_address(txn.get('toAddr')),
-        'version': to_int(txn.get('version')),
+        'from_address': encode_bench32_pub_key(txn.get('senderPubKey')),
+        'to_address': encode_bench32_address(txn.get('toAddr')),
         **map_receipt(txn)
     }
 
@@ -53,8 +50,42 @@ def map_receipt(txn):
         return None
 
     return {
-        'accepted': receipt.get('accepted'),
-        'success': receipt.get('success'),
-        'cumulative_gas': to_int(receipt.get('cumulative_gas')),
-        'epoch_num': to_int(receipt.get('epoch_num')),
+        'receipt_status': int(receipt.get('success')),
+        'gas_used': to_int(receipt.get('cumulative_gas'))
     }
+
+# The original ones
+# def map_transaction(tx_block, txn):
+#     block = {
+#         'type': 'transaction',
+#         'id': txn.get('ID'),
+#         'block_number': tx_block.get('number'),
+#         'block_timestamp': tx_block.get('timestamp'),
+#         'amount': to_int(txn.get('amount')),
+#         'code': txn.get('code'),
+#         'data': txn.get('data'),
+#         'gas_limit': to_int(txn.get('gasLimit')),
+#         'gas_price': to_int(txn.get('gasPrice')),
+#         'nonce': to_int(txn.get('nonce')),
+#         'sender_pub_key': txn.get('senderPubKey'),
+#         'sender': encode_bench32_pub_key(txn.get('senderPubKey')),
+#         'signature': txn.get('signature'),
+#         'to_addr': encode_bench32_address(txn.get('toAddr')),
+#         'version': to_int(txn.get('version')),
+#         **map_receipt(txn)
+#     }
+#
+#     return block
+#
+#
+# def map_receipt(txn):
+#     receipt = txn.get('receipt')
+#     if receipt is None:
+#         return None
+#
+#     return {
+#         'accepted': receipt.get('accepted'),
+#         'success': receipt.get('success'),
+#         'cumulative_gas': to_int(receipt.get('cumulative_gas')),
+#         'epoch_num': to_int(receipt.get('epoch_num')),
+#     }
