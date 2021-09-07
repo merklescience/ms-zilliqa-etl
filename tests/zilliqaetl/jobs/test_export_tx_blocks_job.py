@@ -58,7 +58,7 @@ def test_export_tx_blocks_job(tmpdir, start_block, end_block, resource_group, pr
     )
     job.run()
 
-    all_files = ['tx_blocks.json', 'ds_blocks.json', 'transactions.json', 'event_logs.json', 'transitions.json',
+    all_files = ['tx_blocks.json', 'ds_blocks.json', 'transactions.json', 'event_logs.json', 'transitions_orig.json',
                  'exceptions.json']
 
     for file in all_files:

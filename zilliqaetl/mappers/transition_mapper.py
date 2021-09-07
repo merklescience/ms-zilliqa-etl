@@ -21,21 +21,26 @@
 # SOFTWARE.
 
 from zilliqaetl.utils.zilliqa_utils import to_int, encode_bench32_address
-import json
-
-req_params = ["from", "to", "amount", "initiator"]
 
 
-def convert_params(params: list) -> dict:
-    di_obj = {}
-    for elem in params:
-        if elem["vname"] in req_params:
-            di_obj[elem["vname"]] = elem["value"]
-    if all(param in di_obj.keys() for param in req_params):
-        di_obj["token_amount"] = di_obj.pop("amount")
-        return di_obj
-    else:
-        return {"from": None, "to": None, "token_amount": None, "initiator": None}
+def convert_params(elems):
+    di_obj = {"from": None, "to": None, "params_amount": "0", "initiator": None}
+    for elem in elems:
+        vname = elem["vname"]
+        val = elem["value"]
+        if vname in ["from", "sender"] and di_obj.get("from") is None:
+            # if di_obj.get("from") is None:  # not needed val is not None
+            di_obj["from"] = val
+        elif vname in ["to", "recipient"] and di_obj.get("to") is None:
+            # if di_obj.get("to") is None:  # not needed val is not None
+            di_obj["to"] = val
+        elif vname == 'amount':  # not needed val is not None
+            # if val is not None:
+            di_obj["params_amount"] = val
+        elif vname == 'initiator':  # not needed val is not None
+            # if val is not None:
+            di_obj["initiator"] = val
+    return di_obj
 
 
 def map_transitions(tx_block, txn):
@@ -57,3 +62,31 @@ def map_transitions(tx_block, txn):
                 'tag': msg.get('_tag'),
                 **convert_params(msg.get('params'))
             }
+
+
+def map_token_traces(tx_block, txn, txn_type):
+    # TODO :confirm logic once
+    receipt = txn.get('receipt')
+    if receipt and receipt.get('transitions'):
+        for index, transition in enumerate(receipt.get('transitions')):
+            msg = transition.get('msg')
+            data = {
+                "type": txn_type,
+                'block_number': tx_block.get('number'),
+                'block_timestamp': tx_block.get('timestamp'),
+                'transaction_id': '0x' + txn.get('ID'),
+                'log_index': index,
+                'from_address': encode_bench32_address(transition.get('addr')),
+                'msg_amount': to_int(msg.get('_amount')),
+                'to_address': encode_bench32_address(msg.get('_recipient')),
+                'call_type': msg.get('_tag'),
+                "receipt_status": int(receipt.get("success")),
+                **convert_params(msg.get('params'))
+            }
+            if txn_type == 'trace' and int(txn.get("amount", 0)) > 0:
+                yield data
+            elif txn_type == 'token_transfer' and (
+                    (data.get("msg_amount", 0) > 0) or data.get("params_amount", "0") != "0"):
+                yield data
+            # else:
+            #     yield {}

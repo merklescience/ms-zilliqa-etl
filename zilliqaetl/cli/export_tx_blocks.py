@@ -55,6 +55,12 @@ def export_tx_blocks(start_block, end_block, provider_uri, max_workers, output_d
         end_block=end_block,
         zilliqa_api=zilliqa_api,
         max_workers=max_workers,
+        export_exceptions=False,
+        export_event_logs=False,
+        export_transactions=True,
+        export_traces=True,
+        export_token_transfers=True,
+        export_transitions=False,
         item_exporter=ZilliqaItemExporter(output_dir, output_format=output_format),
     )
     job.run()

@@ -28,7 +28,7 @@ from zilliqaetl.jobs.retriable_exceptions import RETRY_EXCEPTIONS
 from zilliqaetl.mappers.event_log_mapper import map_event_logs
 from zilliqaetl.mappers.exception_mapper import map_exceptions
 from zilliqaetl.mappers.transaction_mapper import map_transaction
-from zilliqaetl.mappers.transition_mapper import map_transitions
+from zilliqaetl.mappers.transition_mapper import map_transitions, map_token_traces
 from zilliqaetl.mappers.tx_block_mapper import map_tx_block
 from zilliqaetl.service.zilliqa_service import ZilliqaService
 
@@ -45,7 +45,10 @@ class ExportTxBlocksJob(BaseJob):
             export_transactions=True,
             export_event_logs=True,
             export_exceptions=True,
-            export_transitions=True):
+            export_transitions=True,
+            export_token_transfers=True,
+            export_traces=True
+    ):
         validate_range(start_block, end_block)
         self.start_block = start_block
         self.end_block = end_block
@@ -59,6 +62,8 @@ class ExportTxBlocksJob(BaseJob):
         self.export_event_logs = export_event_logs
         self.export_exceptions = export_exceptions
         self.export_transitions = export_transitions
+        self.export_token_transfers = export_token_transfers
+        self.export_traces = export_traces
 
     def _start(self):
         self.item_exporter.open()
@@ -71,7 +76,7 @@ class ExportTxBlocksJob(BaseJob):
         )
 
     def _export_batch(self, block_number_batch):
-        # TODO : Add coin prices here and bifurcate traces and token transfer
+        # TODO : bifurcate traces and token transfer
         items = []
         for number in block_number_batch:
             tx_block = map_tx_block(self.zilliqa_service.get_tx_block(number))
@@ -86,6 +91,10 @@ class ExportTxBlocksJob(BaseJob):
                         items.extend(map_exceptions(tx_block, txn))
                     if self._should_export_transitions(txn):
                         items.extend(map_transitions(tx_block, txn))
+                    if self._should_export_token_transfers(txn):
+                        items.extend(map_token_traces(tx_block, txn, txn_type="token_transfer"))
+                    if self._should_export_traces(txn):
+                        items.extend(map_token_traces(tx_block, txn, txn_type="trace"))
             tx_block['num_present_transactions'] = len(txns)
             items.append(tx_block)
 
@@ -103,6 +112,12 @@ class ExportTxBlocksJob(BaseJob):
 
     def _should_export_transitions(self, txn):
         return self.export_transitions and txn.get('receipt')
+
+    def _should_export_token_transfers(self, txn):
+        return self.export_token_transfers and txn.get('receipt')
+
+    def _should_export_traces(self, txn):
+        return self.export_traces and txn.get('receipt')
 
     def _end(self):
         self.batch_work_executor.shutdown()

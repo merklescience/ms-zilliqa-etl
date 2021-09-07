@@ -31,8 +31,8 @@ def map_transaction(tx_block, txn):
         'hash': '0x' + txn.get('ID'),  # TODO: Confirm if we have to add 0x at this stage or not
         'block_number': tx_block.get('number'),
         'block_timestamp': tx_block.get('timestamp'),
-        "block_hash": '',  # TODO: Check if we can skip sending
-        "input": '',  # TODO: Check if we can skip sending
+        # "block_hash": '',  # TODO: Check if we can skip sending
+        # "input": '',  # TODO: Check if we can skip sending
         'value': to_int(txn.get('amount')),
         'gas_price': to_int(txn.get('gasPrice')),
         'nonce': to_int(txn.get('nonce')),
