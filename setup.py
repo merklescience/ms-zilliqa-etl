@@ -28,13 +28,16 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     keywords='Zilliqa',
-    python_requires='>=3.6.0,<3.9.0',
+    python_requires='>=3.6.0,<=3.9.5',
     install_requires=[
         'blockchain-etl-common==1.6.1',
         'click==7.0',
         'python-dateutil==2.7.0',
         'pyzil==1.5.22',
         'jsonrpcclient==3.3.6',
+        'google-cloud==0.34.0',
+        'google-cloud-pubsub==2.5.0',
+        'timeout-decorator==0.5.0'
     ],
     extras_require={
         'dev': [
