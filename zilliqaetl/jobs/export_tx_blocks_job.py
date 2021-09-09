@@ -67,6 +67,7 @@ class ExportTxBlocksJob(BaseJob):
 
     def _start(self):
         self.item_exporter.open()
+        pass
 
     def _export(self):
         self.batch_work_executor.execute(

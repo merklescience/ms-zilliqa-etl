@@ -27,7 +27,7 @@ import click
 from exporters.zilliqa_item_exporter import get_streamer_exporter
 from streaming.zil_stream_adapter import ZilliqaStreamerAdapter
 from zilliqaetl.thread_local_proxy import ThreadLocalProxy
-
+from enumeration.entity_type import EntityType
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option('-l', '--last-synced-block-file', default='last_synced_block.txt', type=str, help='')
