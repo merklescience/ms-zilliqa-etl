@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import logging
 import random
 
@@ -32,11 +33,11 @@ from enumeration.entity_type import EntityType
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option('-l', '--last-synced-block-file', default='last_synced_block.txt', type=str, help='')
 @click.option('--lag', default=0, type=int, help='The number of blocks to lag behind the network.')
-@click.option('-p', '--provider-uri', default='https://mainnet.infura.io', type=str,
+@click.option('-p', '--provider-uri', default='https://dev-api.zilliqa.com/', type=str,
               help='The URI of the web3 provider e.g. '
-                   'file://$HOME/Library/Ethereum/geth.ipc or https://mainnet.infura.io')
+                   'https://dev-api.zilliqa.com/')
 @click.option('-o', '--output', type=str,
-              help='Google PubSub topic path e.g. projects/your-project/topics/ethereum_blockchain. '
+              help='Google PubSub topic path e.g. projects/your-project/topics/zilliqa_blockchain. '
                    'If not specified will print to console')
 @click.option('-s', '--start-block', default=None, type=int, help='Start block')
 @click.option('-e', '--entity-types', default=','.join(EntityType.ALL_FOR_INFURA), type=str,
@@ -52,9 +53,9 @@ def stream(last_synced_block_file, lag, provider_uri, output, start_block, entit
     """Streams all data types to console or Google Pub/Sub."""
     #configure_logging(log_file)
     #configure_signals()
+
     entity_types = parse_entity_types(entity_types)
 
-    # from blockchainetl.streaming.streaming_utils import get_item_exporter
     from zilliqaetl.exporters.zilliqa_item_exporter import get_item_exporter
     from blockchainetl.streaming.streamer import Streamer
     
