@@ -50,26 +50,15 @@ from zilliqaetl.thread_local_proxy import ThreadLocalProxy
 def stream(last_synced_block_file, lag, provider_uri, output, start_block, entity_types,
            period_seconds=10, batch_size=2, block_batch_size=10, max_workers=5, log_file=None, pid_file=None):
     """Streams all data types to console or Google Pub/Sub."""
-    configure_logging(log_file)
-    configure_signals()
+    #configure_logging(log_file)
+    #configure_signals()
     entity_types = parse_entity_types(entity_types)
 
     # from blockchainetl.streaming.streaming_utils import get_item_exporter
     from zilliqaetl.exporters.zilliqa_item_exporter import get_item_exporter
     from blockchainetl.streaming.streamer import Streamer
-
-    # TODO: Implement fallback mechanism for provider uris instead of picking randomly
-    # provider_uri = pick_random_provider_uri(provider_uri)
+    
     logging.info('Using ' + provider_uri)
-
-    # streamer_adapter = EthStreamerAdapter(
-    #     batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
-    #     item_exporter=get_streamer_exporter(output)
-    #     batch_size=batch_size,
-    #     max_workers=max_workers,
-    #     entity_types=entity_types
-    # )
-
     zil_streamer_adapter = ZilliqaStreamerAdapter(provider_uri=provider_uri,item_exporter=get_streamer_exporter(output))
 
 
