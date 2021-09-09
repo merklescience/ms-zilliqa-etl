@@ -23,10 +23,9 @@ import logging
 import random
 
 import click
-from blockchainetl.streaming.streaming_utils import configure_signals, configure_logging
-from ethereumetl.enumeration.entity_type import EntityType
 
-from ethereumetl.providers.auto import get_provider_from_uri
+from exporters.zilliqa_item_exporter import get_streamer_exporter
+from streaming.zil_stream_adapter import ZilliqaStreamerAdapter
 from zilliqaetl.thread_local_proxy import ThreadLocalProxy
 
 
@@ -55,23 +54,27 @@ def stream(last_synced_block_file, lag, provider_uri, output, start_block, entit
     configure_signals()
     entity_types = parse_entity_types(entity_types)
 
-    from blockchainetl.streaming.streaming_utils import get_item_exporter
-    from ethereumetl.streaming.eth_streamer_adapter import EthStreamerAdapter
+    # from blockchainetl.streaming.streaming_utils import get_item_exporter
+    from zilliqaetl.exporters.zilliqa_item_exporter import get_item_exporter
     from blockchainetl.streaming.streamer import Streamer
 
     # TODO: Implement fallback mechanism for provider uris instead of picking randomly
-    provider_uri = pick_random_provider_uri(provider_uri)
+    # provider_uri = pick_random_provider_uri(provider_uri)
     logging.info('Using ' + provider_uri)
 
-    streamer_adapter = EthStreamerAdapter(
-        batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
-        item_exporter=get_item_exporter(output),
-        batch_size=batch_size,
-        max_workers=max_workers,
-        entity_types=entity_types
-    )
+    # streamer_adapter = EthStreamerAdapter(
+    #     batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
+    #     item_exporter=get_streamer_exporter(output)
+    #     batch_size=batch_size,
+    #     max_workers=max_workers,
+    #     entity_types=entity_types
+    # )
+
+    zil_streamer_adapter = ZilliqaStreamerAdapter(provider_uri=provider_uri,item_exporter=get_streamer_exporter(output))
+
+
     streamer = Streamer(
-        blockchain_streamer_adapter=streamer_adapter,
+        blockchain_streamer_adapter=zil_streamer_adapter,
         last_synced_block_file=last_synced_block_file,
         lag=lag,
         start_block=start_block,
