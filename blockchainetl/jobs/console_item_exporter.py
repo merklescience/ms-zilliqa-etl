@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2020 Evgeny Medvedev, evge.medvedev@gmail.com
+# Copyright (c) 2018 Evgeny Medvedev, evge.medvedev@gmail.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class StreamerAdapterStub:
+import json
 
+
+class ConsoleItemExporter:
     def open(self):
         pass
 
-    def get_current_block_number(self):
-        return 0
+    def export_items(self, items):
+        for item in items:
+            self.export_item(item)
 
-    def export_all(self, start_block, end_block):
-        pass
+    def export_item(self, item):
+        print(json.dumps(item))
 
     def close(self):
         pass

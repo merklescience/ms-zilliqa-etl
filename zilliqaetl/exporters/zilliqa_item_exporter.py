@@ -28,7 +28,7 @@ from blockchainetl_common.atomic_counter import AtomicCounter
 from blockchainetl_common.exporters import JsonLinesItemExporter, CsvItemExporter
 from blockchainetl_common.file_utils import get_file_handle, close_silently
 from google_pubsub_item_exporter import GooglePubSubItemExporter
-
+from blockchainetl.jobs.console_item_exporter import ConsoleItemExporter
 
 class ZilliqaItemExporter:
     def __init__(self, output_dir, item_type_to_filename=None, output_format='json'):
@@ -87,7 +87,7 @@ class ZilliqaItemExporter:
                 self.logger.info('{} items exported: {}'.format(item_type, counter.increment() - 1))
 
 
-def get_item_exporter(output_format, file, output):
+def get_item_exporter(output_format, file):
     if output_format == 'json':
         return JsonLinesItemExporter(file)
     elif output_format == 'csv':
