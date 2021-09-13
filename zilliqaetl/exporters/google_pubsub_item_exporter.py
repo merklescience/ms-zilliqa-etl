@@ -60,7 +60,7 @@ class GooglePubSubItemExporter:
             future.result()
 
     def export_item(self, item):
-        item_type = item.get('type')
+        item_type = item.pop('type', None)
         if item_type is not None and item_type in self.item_type_to_topic_mapping:
             topic_path = self.item_type_to_topic_mapping.get(item_type)
             data = json.dumps(item).encode('utf-8')
