@@ -102,7 +102,7 @@ def get_streamer_exporter(output):
             'block': output + '.blocks',
             'transaction': output + '.transactions',
             'token_transfer': output + '.token_transfers',
-            # 'log': output + '.logs',
+            #'log': output + '.logs',
             # 'trace': output + '.traces',
             # 'contract': output + '.contracts',
             # 'token': output + '.tokens',
