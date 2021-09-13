@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-from zilliqaetl.utils.zilliqa_utils import to_int, encode_bench32_pub_key, encode_bench32_address
+from zilliqaetl.utils.zilliqa_utils import to_int, encode_bech32_pub_key, encode_bech32_address
 
 
 # Modified acc to MS use case
@@ -31,13 +31,11 @@ def map_transaction(tx_block, txn):
         'hash': '0x' + txn.get('ID'),  # TODO: Confirm if we have to add 0x at this stage or not
         'block_number': tx_block.get('number'),
         'block_timestamp': tx_block.get('timestamp'),
-        # "block_hash": '',  # TODO: Check if we can skip sending
-        # "input": '',  # TODO: Check if we can skip sending
         'value': to_int(txn.get('amount')),
         'gas_price': to_int(txn.get('gasPrice')),
         'nonce': to_int(txn.get('nonce')),
-        'from_address': encode_bench32_pub_key(txn.get('senderPubKey')),
-        'to_address': encode_bench32_address(txn.get('toAddr')),
+        'from_address': encode_bech32_pub_key(txn.get('senderPubKey')),
+        'to_address': encode_bech32_address(txn.get('toAddr')),
         **map_receipt(txn)
     }
 
