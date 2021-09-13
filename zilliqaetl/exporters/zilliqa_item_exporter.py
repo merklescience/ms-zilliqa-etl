@@ -102,11 +102,11 @@ def get_streamer_exporter(output):
         item_exporter = GooglePubSubItemExporter(item_type_to_topic_mapping={
             'block': output + '.blocks',
             'transaction': output + '.transactions',
-            'log': output + '.logs',
             'token_transfer': output + '.token_transfers',
-            'trace': output + '.traces',
-            'contract': output + '.contracts',
-            'token': output + '.tokens',
+            # 'log': output + '.logs',
+            # 'trace': output + '.traces',
+            # 'contract': output + '.contracts',
+            # 'token': output + '.tokens',
         })
     else:
         item_exporter = ConsoleItemExporter()
