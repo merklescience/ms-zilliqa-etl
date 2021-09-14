@@ -76,7 +76,6 @@ class ExportTxBlocksJob(BaseJob):
         )
 
     def _export_batch(self, block_number_batch):
-        # TODO : bifurcate traces and token transfer
         items = []
         for number in block_number_batch:
             tx_block = map_tx_block(self.zilliqa_service.get_tx_block(number))
@@ -92,7 +91,11 @@ class ExportTxBlocksJob(BaseJob):
                     if self._should_export_transitions(txn):
                         items.extend(map_transitions(tx_block, txn))
                     if self._should_export_token_transfers(txn):
-                        items.extend(map_token_traces(tx_block, txn, txn_type="token_transfer"))
+                        token_transfers = []
+                        token_transfers.extend(map_token_traces(tx_block, txn, txn_type="token_transfer"))
+                        # Since in the case of burn duplicate can happen so remove duplicates
+                        token_transfers = [dict(t) for t in {tuple(d.items()) for d in token_transfers}]
+                        items.extend(token_transfers)
                     if self._should_export_traces(txn):
                         items.extend(map_token_traces(tx_block, txn, txn_type="trace"))
             tx_block['num_present_transactions'] = len(txns)

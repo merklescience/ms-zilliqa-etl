@@ -22,39 +22,29 @@
 
 from zilliqaetl.utils.zilliqa_utils import to_int, encode_bech32_address
 import json
+from pyzil.crypto import zilkey
+
+# The above tag based code would only work with the below XSGD and XIDR address only
+SUPPORTED_TOKENS = ["zil1zu72vac254htqpg3mtywdcfm84l3dfd9qzww8t", "zil180v66mlw007ltdv8tq5t240y7upwgf7djklmwh",
+                    "zil180v66mlw007ltdv8tq5t240y7upwgf7djklmwh"]
 
 
-def params_to_json(elems):
+def params_to_json(elems, json_string=True):
     di_obj = {}
     for elem in elems:
-        elem = json.loads(elem)
+        # elem = json.loads(elem)
         if isinstance(elem["value"], str):
-            val = encode_bech32_address(elem["value"])
+            if zilkey.is_valid_address(elem["value"]):
+                val = encode_bech32_address(elem["value"])
+            else:
+                val = None
             di_obj[elem["vname"]] = val if val is not None else elem["value"]
         else:
             di_obj[elem["vname"]] = elem["value"]
-    return json.dumps(di_obj) if len(di_obj) > 0 else None
-
-
-def convert_params(elems):
-    # TODO : revisit when logic is final
-    di_obj = {"from": None, "to": None, "params_amount": "0", "initiator": None}
-    for elem in elems:
-        vname = elem["vname"]
-        val = elem["value"]
-        if vname in ["from", "sender"] and di_obj.get("from") is None:
-            # if di_obj.get("from") is None:  # not needed val is not None
-            di_obj["from"] = val
-        elif vname in ["to", "recipient"] and di_obj.get("to") is None:
-            # if di_obj.get("to") is None:  # not needed val is not None
-            di_obj["to"] = val
-        elif vname == 'amount':  # not needed val is not None
-            # if val is not None:
-            di_obj["params_amount"] = val
-        elif vname == 'initiator':  # not needed val is not None
-            # if val is not None:
-            di_obj["initiator"] = val
-    return di_obj
+    if json_string:
+        return json.dumps(di_obj) if len(di_obj) > 0 else None
+    else:
+        return di_obj if len(di_obj) > 0 else None
 
 
 def map_transitions(tx_block, txn):
@@ -79,29 +69,50 @@ def map_transitions(tx_block, txn):
 
 
 def map_token_traces(tx_block, txn, txn_type):
-    # TODO :confirm logic once
-    # TODO : add keys token_address, value,
     receipt = txn.get('receipt')
     if receipt and receipt.get('transitions'):
         for index, transition in enumerate(receipt.get('transitions')):
             msg = transition.get('msg')
+            encoded_addr = encode_bech32_address(transition.get('addr'))
+            encoded_recipient = encode_bech32_address(msg.get('_recipient'))
             data = {
                 "type": txn_type,
                 'block_number': tx_block.get('number'),
                 'block_timestamp': tx_block.get('timestamp'),
                 'transaction_hash': '0x' + txn.get('ID'),
                 'log_index': index,
-                'from_address': encode_bech32_address(transition.get('addr')),  # TODO : revisit when logic is final
-                'to_address': encode_bech32_address(msg.get('_recipient')),  # TODO : revisit when logic is final
-                'call_type': msg.get('_tag'),  # TODO: check if we need this since not in create table command
                 "receipt_status": int(receipt.get("success")),
-                # TODO: check if we need this since not in create table command
-                **convert_params(msg.get('params'))
             }
             if txn_type == 'trace' and msg.get('_amount', "0") != "0":
                 data["value"] = msg.get('_amount')
+                data["from_address"] = encoded_addr
+                data["to_address"] = encoded_recipient
                 yield data
-            elif txn_type == 'token_transfer' and (
-                    (data.get("msg_amount", 0) > 0) or data.get("params_amount", "0") != "0"):
-                data["value"] = None  # TODO: define with respect to tokens, this value will come from params
-                yield data
+            elif txn_type == 'token_transfer' and (msg.get('_amount', "0") == "0") and (
+                    (encoded_addr in SUPPORTED_TOKENS) or (encoded_recipient in SUPPORTED_TOKENS)):
+                tag = msg.get('_tag')
+                params = params_to_json(msg.get('params'), json_string=False)
+                param_keys = set(params.keys())
+                if (tag == "TransferFrom") and ({"from", "to", "amount"} <= param_keys):
+                    data["from_address"] = params["from"]
+                    data["to_address"] = params["to"]
+                    data["value"] = params["amount"]
+                    data["token_address"] = encoded_recipient
+                    data["call_type"] = tag
+                    yield data
+                elif (tag == "Mint") and ("amount" in param_keys) and \
+                        (("to" in param_keys) or ("recipient" in param_keys)):
+                    data["from_address"] = "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz"
+                    data["to_address"] = params.get("to", params.get("recipient", None))
+                    data["value"] = params["amount"]
+                    data["token_address"] = encoded_addr if (encoded_addr in SUPPORTED_TOKENS) else encoded_recipient
+                    data["call_type"] = tag
+                    yield data
+                elif (tag == "Burn") and ("amount" in param_keys) and \
+                        (("to" in param_keys) or ("recipient" in param_keys)):
+                    data["from_address"] = params.get("initiator", encoded_addr)
+                    data["to_address"] = "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz"
+                    data["value"] = params["amount"]
+                    data["token_address"] = encoded_addr if (encoded_addr in SUPPORTED_TOKENS) else encoded_recipient
+                    data["call_type"] = tag
+                    yield data
