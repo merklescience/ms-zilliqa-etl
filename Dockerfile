@@ -1,10 +1,13 @@
 FROM python:3.6
-MAINTAINER Evgeny Medvedev <evge.medvedev@gmail.com>
+
 ENV PROJECT_DIR=zilliqa-etl
 
 RUN mkdir /$PROJECT_DIR
 WORKDIR /$PROJECT_DIR
 COPY . .
+
+RUN apt install libgmp-dev
+
 RUN pip install --upgrade pip && pip install -e /$PROJECT_DIR/
 
 # Add Tini
