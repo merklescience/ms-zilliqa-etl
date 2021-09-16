@@ -27,7 +27,7 @@ import threading
 from blockchainetl_common.atomic_counter import AtomicCounter
 from blockchainetl_common.exporters import JsonLinesItemExporter, CsvItemExporter
 from blockchainetl_common.file_utils import get_file_handle, close_silently
-from google_pubsub_item_exporter import GooglePubSubItemExporter
+from zilliqaetl.exporters.google_pubsub_item_exporter import GooglePubSubItemExporter
 from blockchainetl.jobs.console_item_exporter import ConsoleItemExporter
 
 class ZilliqaItemExporter:
