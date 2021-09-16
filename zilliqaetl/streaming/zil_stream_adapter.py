@@ -26,10 +26,11 @@ from zilliqaetl.jobs.export_tx_blocks_job import ExportTxBlocksJob
 
 
 class ZilliqaStreamerAdapter:
-    def __init__(self, provider_uri, item_exporter):
+    def __init__(self, provider_uri, item_exporter,max_workers):
         self.provider_uri = provider_uri
         self.item_exporter = item_exporter
-        self.api = ZilliqaAPI(provider_uri)
+        self.api = provider_uri
+        self.max_workers = max_workers
 
     def open(self):
         self.item_exporter.open()
@@ -43,7 +44,7 @@ class ZilliqaStreamerAdapter:
             start_block=start_block,
             end_block=end_block,
             zilliqa_api=self.api,
-            max_workers=5,
+            max_workers=self.max_workers,
             export_exceptions=False,
             export_event_logs=False,
             export_transactions=True,
