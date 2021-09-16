@@ -99,11 +99,11 @@ def get_item_exporter(output_format, file):
 def get_streamer_exporter(output):
     if output is not None:
         item_exporter = GooglePubSubItemExporter(item_type_to_topic_mapping={
-            'block': output + '.blocks',
             'transaction': output + '.transactions',
             'token_transfer': output + '.token_transfers',
+            'trace': output + '.traces',
+            #'block': output + '.blocks',
             #'log': output + '.logs',
-            # 'trace': output + '.traces',
             # 'contract': output + '.contracts',
             # 'token': output + '.tokens',
         })
