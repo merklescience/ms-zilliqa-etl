@@ -93,8 +93,21 @@ class ExportTxBlocksJob(BaseJob):
                     if self._should_export_token_transfers(txn):
                         token_transfers = []
                         token_transfers.extend(map_token_traces(tx_block, txn, txn_type="token_transfer"))
-                        # Since in the case of burn duplicate can happen so remove duplicates
-                        token_transfers = [dict(t) for t in {tuple(d.items()) for d in token_transfers}]
+                        # Since duplicate can happen for combination of "from_address", "to_address", "value",
+                        # "call_type", "transaction_hash"
+                        dedup_token_transfers = {token["log_index"]: {"call_type": token["call_type"],
+                                                                      "from_address": token["from_address"],
+                                                                      "to_address": token["to_address"],
+                                                                      "transaction_hash": token["transaction_hash"],
+                                                                      "value": token["value"],
+                                                                      "token_address": token["token_address"]}
+                                                 for token in token_transfers}
+                        unique_token_transfers = {}
+                        for key, token_value in dedup_token_transfers.items():
+                            if token_value not in unique_token_transfers.values():
+                                unique_token_transfers[key] = token_value
+                        token_transfers = [token_transfer for token_transfer in token_transfers if
+                                           token_transfer["log_index"] in unique_token_transfers.keys()]
                         items.extend(token_transfers)
                     if self._should_export_traces(txn):
                         items.extend(map_token_traces(tx_block, txn, txn_type="trace"))

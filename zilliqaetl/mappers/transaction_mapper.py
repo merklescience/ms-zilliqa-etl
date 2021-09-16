@@ -28,17 +28,16 @@ from zilliqaetl.utils.zilliqa_utils import to_int, encode_bech32_pub_key, encode
 def map_transaction(tx_block, txn):
     block = {
         'type': 'transaction',
-        'hash': '0x' + txn.get('ID'),  # TODO: Confirm if we have to add 0x at this stage or not
+        'hash': '0x' + txn.get('ID'),
         'block_number': tx_block.get('number'),
         'block_timestamp': tx_block.get('timestamp'),
         'value': to_int(txn.get('amount')),
         'gas_price': to_int(txn.get('gasPrice')),
-        'nonce': to_int(txn.get('nonce')),
         'from_address': encode_bech32_pub_key(txn.get('senderPubKey')),
         'to_address': encode_bech32_address(txn.get('toAddr')),
         **map_receipt(txn)
     }
-
+    block["fee"] = block.pop("gas_price") * block.pop("gas_used")
     return block
 
 
