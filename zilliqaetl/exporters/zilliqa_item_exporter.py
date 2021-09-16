@@ -27,7 +27,8 @@ import threading
 from blockchainetl_common.atomic_counter import AtomicCounter
 from blockchainetl_common.exporters import JsonLinesItemExporter, CsvItemExporter
 from blockchainetl_common.file_utils import get_file_handle, close_silently
-
+from google_pubsub_item_exporter import GooglePubSubItemExporter
+from blockchainetl.jobs.console_item_exporter import ConsoleItemExporter
 
 class ZilliqaItemExporter:
     def __init__(self, output_dir, item_type_to_filename=None, output_format='json'):
@@ -93,3 +94,20 @@ def get_item_exporter(output_format, file):
         return CsvItemExporter(file)
     else:
         ValueError(f'output format {output_format} is not recognized')
+
+
+def get_streamer_exporter(output):
+    if output is not None:
+        item_exporter = GooglePubSubItemExporter(item_type_to_topic_mapping={
+            'transaction': output + '.transactions',
+            'token_transfer': output + '.token_transfers',
+            'trace': output + '.traces',
+            #'block': output + '.blocks',
+            #'log': output + '.logs',
+            # 'contract': output + '.contracts',
+            # 'token': output + '.tokens',
+        })
+    else:
+        item_exporter = ConsoleItemExporter()
+
+    return item_exporter

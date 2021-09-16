@@ -140,3 +140,6 @@ cython_debug/
 output
 .idea
 .DS_Store
+
+.vscode/
+pyrightconfig.json
