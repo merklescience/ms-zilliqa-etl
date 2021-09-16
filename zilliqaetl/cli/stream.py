@@ -25,10 +25,13 @@ import random
 
 import click
 
+from zilliqaetl.cli.rate_limiting_proxy import RateLimitingProxy
 from exporters.zilliqa_item_exporter import get_streamer_exporter
 from streaming.zil_stream_adapter import ZilliqaStreamerAdapter
 from zilliqaetl.thread_local_proxy import ThreadLocalProxy
 from enumeration.entity_type import EntityType
+from pyzil.zilliqa.api import ZilliqaAPI
+
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option('-l', '--last-synced-block-file', default='last_synced_block.txt', type=str, help='')
@@ -43,25 +46,26 @@ from enumeration.entity_type import EntityType
 @click.option('-e', '--entity-types', default=','.join(EntityType.ALL_FOR_STREAMING), type=str,
               help='The list of entity types to export.')
 @click.option('--period-seconds', default=10, type=int, help='How many seconds to sleep between syncs')
-@click.option('-b', '--batch-size', default=10, type=int, help='How many blocks to batch in single request')
 @click.option('-B', '--block-batch-size', default=1, type=int, help='How many blocks to batch in single sync round')
 @click.option('-w', '--max-workers', default=5, type=int, help='The number of workers')
-@click.option('--log-file', default=None, type=str, help='Log file')
 @click.option('--pid-file', default=None, type=str, help='pid file')
+@click.option('-r', '--rate-limit', default=None, show_default=True, type=int,
+              help='Maximum requests per second for provider in case it has rate limiting')
 def stream(last_synced_block_file, lag, provider_uri, output, start_block, entity_types,
-           period_seconds=10, batch_size=2, block_batch_size=10, max_workers=5, log_file=None, pid_file=None):
+           period_seconds=10,  block_batch_size=10, max_workers=5, pid_file=None, rate_limit=20):
     """Streams all data types to console or Google Pub/Sub."""
-    #configure_logging(log_file)
-    #configure_signals()
+    zilliqa_api = ThreadLocalProxy(lambda: ZilliqaAPI(provider_uri))
+    if rate_limit is not None and rate_limit > 0:
+        zilliqa_api = RateLimitingProxy(zilliqa_api, max_per_second=rate_limit)
 
     entity_types = parse_entity_types(entity_types)
 
     from zilliqaetl.exporters.zilliqa_item_exporter import get_item_exporter
     from blockchainetl.streaming.streamer import Streamer
-    
-    logging.info('Using ' + provider_uri)
-    zil_streamer_adapter = ZilliqaStreamerAdapter(provider_uri=provider_uri,item_exporter=get_streamer_exporter(output))
 
+    logging.info('Using ' + provider_uri)
+    zil_streamer_adapter = ZilliqaStreamerAdapter(
+        provider_uri=zilliqa_api, item_exporter=get_streamer_exporter(output), max_workers=max_workers)
 
     streamer = Streamer(
         blockchain_streamer_adapter=zil_streamer_adapter,
@@ -83,7 +87,6 @@ def parse_entity_types(entity_types):
         if entity_type not in EntityType.ALL_FOR_STREAMING:
             raise click.BadOptionUsage(
                 '--entity-type', '{} is not an available entity type. Supply a comma separated list of types from {}'
-                    .format(entity_type, ','.join(EntityType.ALL_FOR_STREAMING)))
+                .format(entity_type, ','.join(EntityType.ALL_FOR_STREAMING)))
 
     return entity_types
-
