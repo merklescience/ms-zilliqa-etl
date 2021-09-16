@@ -58,7 +58,7 @@ class ZilliqaStreamerAdapter:
         self.item_exporter.close()
 
 
-if "__main__" == __name__:
-    _streamer = ZilliqaStreamerAdapter("https://dev-api.zilliqa.com/", None)
-    print(_streamer.get_current_block_number())
-    print(_streamer.export_all(3225427, 3225438))
+# if "__main__" == __name__:
+#     _streamer = ZilliqaStreamerAdapter("https://dev-api.zilliqa.com/", None)
+#     print(_streamer.get_current_block_number())
+#     print(_streamer.export_all(3225427, 3225438))
