@@ -40,7 +40,7 @@ from enumeration.entity_type import EntityType
               help='Google PubSub topic path e.g. projects/your-project/topics/zilliqa_blockchain. '
                    'If not specified will print to console')
 @click.option('-s', '--start-block', default=None, type=int, help='Start block')
-@click.option('-e', '--entity-types', default=','.join(EntityType.ALL_FOR_INFURA), type=str,
+@click.option('-e', '--entity-types', default=','.join(EntityType.ALL_FOR_STREAMING), type=str,
               help='The list of entity types to export.')
 @click.option('--period-seconds', default=10, type=int, help='How many seconds to sleep between syncs')
 @click.option('-b', '--batch-size', default=10, type=int, help='How many blocks to batch in single request')
@@ -87,7 +87,3 @@ def parse_entity_types(entity_types):
 
     return entity_types
 
-
-def pick_random_provider_uri(provider_uri):
-    provider_uris = [uri.strip() for uri in provider_uri.split(',')]
-    return random.choice(provider_uris)
