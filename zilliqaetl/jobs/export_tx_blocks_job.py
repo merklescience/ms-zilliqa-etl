@@ -32,6 +32,7 @@ from zilliqaetl.mappers.transition_mapper import map_transitions, map_token_trac
 from zilliqaetl.mappers.tx_block_mapper import map_tx_block
 from zilliqaetl.service.zilliqa_service import ZilliqaService
 
+
 # Exports tx blocks
 class ExportTxBlocksJob(BaseJob):
     def __init__(
@@ -111,7 +112,6 @@ class ExportTxBlocksJob(BaseJob):
                         items.extend(token_transfers)
                     if self._should_export_traces(txn):
                         items.extend(map_token_traces(tx_block, txn, txn_type="trace"))
-            
             tx_block['num_present_transactions'] = len(txns)
             items.append(tx_block)
 
