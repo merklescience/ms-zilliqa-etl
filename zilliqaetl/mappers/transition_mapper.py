@@ -26,7 +26,7 @@ from pyzil.crypto import zilkey
 
 # The above tag based code would only work with the below XSGD and XIDR address only
 SUPPORTED_TOKENS = ["zil1zu72vac254htqpg3mtywdcfm84l3dfd9qzww8t", "zil180v66mlw007ltdv8tq5t240y7upwgf7djklmwh",
-                    "zil180v66mlw007ltdv8tq5t240y7upwgf7djklmwh"]
+                    "zil1cuf78e3p37utekgk0gtcvd3hvkrqcgt06lrnty"]
 
 
 def params_to_json(elems, json_string=True):

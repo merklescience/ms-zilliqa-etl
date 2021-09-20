@@ -21,12 +21,12 @@
 # SOFTWARE.
 
 import logging
-import random
+
 
 import click
 
 from zilliqaetl.cli.rate_limiting_proxy import RateLimitingProxy
-from exporters.zilliqa_item_exporter import get_streamer_exporter
+from zilliqaetl.exporters.zilliqa_item_exporter import get_streamer_exporter
 from streaming.zil_stream_adapter import ZilliqaStreamerAdapter
 from zilliqaetl.thread_local_proxy import ThreadLocalProxy
 from enumeration.entity_type import EntityType
