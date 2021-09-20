@@ -38,7 +38,7 @@ def cli(ctx):
 # export
 cli.add_command(export_ds_blocks, "export_ds_blocks")
 cli.add_command(export_tx_blocks, "export_tx_blocks")
-cli.add_command(stream,"stream")
+cli.add_command(stream, "stream")
 
 # utils
 cli.add_command(get_ds_block_range_for_date, "get_ds_block_range_for_date")
