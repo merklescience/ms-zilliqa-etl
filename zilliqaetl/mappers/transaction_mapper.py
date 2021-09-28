@@ -38,7 +38,9 @@ def map_transaction(tx_block, txn):
         **map_receipt(txn)
     }
     block["fee"] = block.pop("gas_price") * block.pop("gas_used")
-    block["value"] = 0 if block["receipt_status"] == 0 else block["value"]
+    if block["receipt_status"] == 0:
+        block["value"] = 0
+        block["hash"]="0x"
     return block
 
 
