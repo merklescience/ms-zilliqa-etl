@@ -38,6 +38,7 @@ def map_transaction(tx_block, txn):
         **map_receipt(txn)
     }
     block["fee"] = block.pop("gas_price") * block.pop("gas_used")
+    block["value"] = 0 if block["receipt_status"] == 0 else block["value"]
     return block
 
 
@@ -50,39 +51,3 @@ def map_receipt(txn):
         'receipt_status': int(receipt.get('success')),
         'gas_used': to_int(receipt.get('cumulative_gas'))
     }
-
-# The original ones
-# def map_transaction(tx_block, txn):
-#     block = {
-#         'type': 'transaction',
-#         'id': txn.get('ID'),
-#         'block_number': tx_block.get('number'),
-#         'block_timestamp': tx_block.get('timestamp'),
-#         'amount': to_int(txn.get('amount')),
-#         'code': txn.get('code'),
-#         'data': txn.get('data'),
-#         'gas_limit': to_int(txn.get('gasLimit')),
-#         'gas_price': to_int(txn.get('gasPrice')),
-#         'nonce': to_int(txn.get('nonce')),
-#         'sender_pub_key': txn.get('senderPubKey'),
-#         'sender': encode_bench32_pub_key(txn.get('senderPubKey')),
-#         'signature': txn.get('signature'),
-#         'to_addr': encode_bench32_address(txn.get('toAddr')),
-#         'version': to_int(txn.get('version')),
-#         **map_receipt(txn)
-#     }
-#
-#     return block
-#
-#
-# def map_receipt(txn):
-#     receipt = txn.get('receipt')
-#     if receipt is None:
-#         return None
-#
-#     return {
-#         'accepted': receipt.get('accepted'),
-#         'success': receipt.get('success'),
-#         'cumulative_gas': to_int(receipt.get('cumulative_gas')),
-#         'epoch_num': to_int(receipt.get('epoch_num')),
-#     }
