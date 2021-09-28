@@ -64,5 +64,6 @@ For the latest version, check out the repo and call
         > docker run -v $HOME/output:/zilliqa-etl/output zilliqa-etl:latest export_ds_blocks -s 1 -e 500000 -o output
         
 4. Push the image to container registry.
+
         > docker push us.gcr.io/staging-btc-etl/merklescience/zilliqa-etl:latest
         
