@@ -56,7 +56,7 @@ For the latest version, check out the repo and call
 
 2. Build a docker image
         
-        > docker build -t zilliqa-etl:latest .
+        > docker build -t  us.gcr.io/staging-btc-etl/merklescience/zilliqa-etl:0.0.5 .
         > docker image ls
         
 3. Run a container out of the image
@@ -65,5 +65,5 @@ For the latest version, check out the repo and call
         
 4. Push the image to container registry.
 
-        > docker push us.gcr.io/staging-btc-etl/merklescience/zilliqa-etl:latest
+        > docker push us.gcr.io/staging-btc-etl/merklescience/zilliqa-etl:0.0.5
         
