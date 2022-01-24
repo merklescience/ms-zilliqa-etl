@@ -23,6 +23,7 @@ from pyzil.zilliqa.api import APIError
 
 TXN_HASH_NOT_PRESENT = "Txn Hash not Present"
 TX_BLOCK_NO_TRANSACTIONS = "TxBlock has no transactions"
+NO_MICROBLOCKS = "Failed to get Microblock"
 
 class ZilliqaService(object):
     def __init__(self, zilliqa_api):
@@ -52,7 +53,7 @@ class ZilliqaService(object):
         except APIError as e:
             if str(e) == TXN_HASH_NOT_PRESENT:
                 return self.get_validated_transactions(block_number)
-            if str(e) == TX_BLOCK_NO_TRANSACTIONS:
+            if str(e) == TX_BLOCK_NO_TRANSACTIONS or str(e) == NO_MICROBLOCKS:
                 return []
             raise e
 
