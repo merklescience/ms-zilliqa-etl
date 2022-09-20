@@ -105,6 +105,8 @@ def map_token_traces(tx_block, txn, txn_type):
                     data["to_address"] = params["recipient"]
                     data["value"] = params["amount"]
                     data["token_address"] = encoded_addr
+                    data["call_type"] = tag
+                    yield data
                 elif (tag == "Mint") and ("amount" in param_keys) and \
                         (("to" in param_keys) or ("recipient" in param_keys)):
                     data["from_address"] = "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz"
