@@ -70,6 +70,7 @@ class ExportTxBlocksJob(BaseJob):
         pass
 
     def _export(self):
+        """This method is called on job.run()"""
         self.batch_work_executor.execute(
             range(self.start_block, self.end_block + 1),
             self._export_batch,
