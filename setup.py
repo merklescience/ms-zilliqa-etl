@@ -28,7 +28,7 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     keywords='Zilliqa',
-    python_requires='>=3.6.0,<=3.9.5',
+    python_requires='>=3.6.0,<=3.9.20',
     install_requires=[
         'blockchain-etl-common==1.6.1',
         'click==7.0',
