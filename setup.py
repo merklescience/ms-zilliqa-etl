@@ -31,10 +31,10 @@ setup(
     python_requires='>=3.6.0,<=3.9.20',
     install_requires=[
         'blockchain-etl-common==1.6.1',
-        'click==7.0',
+        'click>=7.0',
         'python-dateutil==2.7.0',
         'pyzil==1.5.22',
-        'jsonrpcclient==3.3.6',
+        'jsonrpcclient>=3.3.6',
         'google-cloud==0.34.0',
         'google-cloud-pubsub==2.5.0',
         'timeout-decorator==0.5.0'
