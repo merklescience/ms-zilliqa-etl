@@ -40,8 +40,13 @@ from pyzil.zilliqa.api import ZilliqaAPI
               help='The URI of the web3 provider e.g. '
                    'https://dev-api.zilliqa.com/')
 @click.option('-o', '--output', type=str,
-              help='Google PubSub topic path e.g. projects/your-project/topics/zilliqa_blockchain. '
-                   'If not specified will print to console')
+              help='pubsub or kafka, if empty defaults to printing to console')
+@click.option('-t', '--topic-prefix', default='producer-ethereum', type=str,
+              help='Google PubSub topic path e.g. projects/your-project/topics/ethereum_blockchain. OR'
+                   'Kakfa topic prefix e.g. {chain}-{facet}-{hot/warm}')
+@click.option('-ts', '--topic-suffix', default='hot', type=str,
+              help='Google PubSub topic path e.g. projects/your-project/topics/ethereum_blockchain. OR'
+                   'Kakfa topic prefix e.g. {chain}-{facet}-{hot/warm}')
 @click.option('-s', '--start-block', default=None, type=int, help='Start block')
 @click.option('-e', '--entity-types', default=','.join(EntityType.ALL_FOR_STREAMING), type=str,
               help='The list of entity types to export.')
@@ -51,8 +56,8 @@ from pyzil.zilliqa.api import ZilliqaAPI
 @click.option('--pid-file', default=None, type=str, help='pid file')
 @click.option('-r', '--rate-limit', default=None, show_default=True, type=int,
               help='Maximum requests per second for provider in case it has rate limiting')
-def stream(last_synced_block_file, lag, provider_uri, output, start_block, entity_types,
-           period_seconds=10,  block_batch_size=10, max_workers=5, pid_file=None, rate_limit=20):
+def stream(last_synced_block_file, lag, provider_uri, output, topic_prefix, topic_suffix, start_block, entity_types,
+           period_seconds=10, block_batch_size=10, max_workers=5, pid_file=None, rate_limit=20):
     """Streams all data types to console or Google Pub/Sub."""
     zilliqa_api = ThreadLocalProxy(lambda: ZilliqaAPI(provider_uri))
     if rate_limit is not None and rate_limit > 0:
@@ -65,7 +70,8 @@ def stream(last_synced_block_file, lag, provider_uri, output, start_block, entit
 
     logging.info('Using ' + provider_uri)
     zil_streamer_adapter = ZilliqaStreamerAdapter(
-        provider_uri=zilliqa_api, item_exporter=get_streamer_exporter(output), max_workers=max_workers)
+        provider_uri=zilliqa_api, item_exporter=get_streamer_exporter(output, topic_prefix, topic_suffix),
+        max_workers=max_workers)
 
     streamer = Streamer(
         blockchain_streamer_adapter=zil_streamer_adapter,

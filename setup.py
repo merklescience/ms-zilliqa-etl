@@ -11,7 +11,7 @@ long_description = read('README.md') if os.path.isfile("README.md") else ""
 
 setup(
     name='zilliqa-etl',
-    version='1.0.5',
+    version='1.0.6',
     author='Evgeny Medvedev',
     author_email='evge.medvedev@gmail.com',
     description='Tools for exporting Zilliqa blockchain data to JSON',
@@ -42,7 +42,8 @@ setup(
     extras_require={
         'dev': [
             'pytest~=4.3.0',
-            'pytest-timeout~=1.3.3'
+            'pytest-timeout~=1.3.3',
+            'confluent-kafka==2.2.0'
         ],
     },
     entry_points={

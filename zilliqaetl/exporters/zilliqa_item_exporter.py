@@ -27,8 +27,11 @@ import threading
 from blockchainetl_common.atomic_counter import AtomicCounter
 from blockchainetl_common.exporters import JsonLinesItemExporter, CsvItemExporter
 from blockchainetl_common.file_utils import get_file_handle, close_silently
+
+from zilliqaetl.exporters.kafka_exporter import KafkaItemExporter
 from zilliqaetl.exporters.google_pubsub_item_exporter import GooglePubSubItemExporter
-from blockchainetl.jobs.console_item_exporter import ConsoleItemExporter
+from zilliqaetl.exporters.console_item_exporter import ConsoleItemExporter
+
 
 class ZilliqaItemExporter:
     def __init__(self, output_dir, item_type_to_filename=None, output_format='json'):
@@ -96,18 +99,23 @@ def get_item_exporter(output_format, file):
         ValueError(f'output format {output_format} is not recognized')
 
 
-def get_streamer_exporter(output):
-    if output is not None:
+def get_streamer_exporter(output, topic_prefix, topic_suffix):
+    item_exporter = ConsoleItemExporter()
+    if output == 'gcp':
         item_exporter = GooglePubSubItemExporter(item_type_to_topic_mapping={
-            'transaction': output + '.transactions',
-            'token_transfer': output + '.token_transfers',
-            'trace': output + '.traces',
-            #'block': output + '.blocks',
-            #'log': output + '.logs',
+            'transaction': topic_prefix + '.transactions',
+            'token_transfer': topic_prefix + '.token_transfers',
+            'trace': topic_prefix + '.traces',
+            # 'block': output + '.blocks',
+            # 'log': output + '.logs',
             # 'contract': output + '.contracts',
             # 'token': output + '.tokens',
         })
-    else:
-        item_exporter = ConsoleItemExporter()
+    if output == 'kafka':
+        item_exporter = KafkaItemExporter(item_type_to_topic_mapping={
+            "transaction": topic_prefix + "-transactions-" + topic_suffix,
+            "token_transfer": topic_prefix + "-token_transfers-" + topic_suffix,
+            "trace": topic_prefix + "-traces-" + topic_suffix,
+        })
 
     return item_exporter
