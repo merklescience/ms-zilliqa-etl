@@ -107,7 +107,7 @@ class ExportTxBlocksJob(BaseJob):
                         # token_transfers = [token_transfer for token_transfer in token_transfers if
                         #                    token_transfer["log_index"] in unique_token_transfers.keys()]
                         items.extend(token_transfers)
-            tx_block['num_present_transactions'] = len(txns)
+            # tx_block['num_present_transactions'] = len(txns)
             items.append(tx_block)
 
         for item in items:
