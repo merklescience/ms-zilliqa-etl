@@ -47,7 +47,7 @@ class KafkaItemExporter:
             self.export_item(item)
 
     def export_item(self, item):
-        item_type = item.get("type", None)
+        item_type = item.pop("type", None)
         has_item_type = item_type is not None
         if has_item_type and item_type in self.item_type_to_topic_mapping:
             topic = self.item_type_to_topic_mapping[item_type]

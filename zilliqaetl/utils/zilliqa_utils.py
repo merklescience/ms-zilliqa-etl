@@ -19,7 +19,8 @@ def iso_datetime_string(timestamp):
     if isinstance(timestamp, str):
         timestamp = int(timestamp)
 
-    return datetime.utcfromtimestamp(timestamp / 1000000).strftime('%Y-%m-%d %H:%M:%S')
+    return int(timestamp / 1000000)
+    # return datetime.utcfromtimestamp(timestamp / 1000000).strftime('%Y-%m-%d %H:%M:%S')
 
 
 def encode_bech32_pub_key(pub_key):

@@ -53,6 +53,13 @@ class ZilliqaStreamerAdapter:
             export_transitions=False,
             item_exporter=self.item_exporter,
         )
+        job = ExportTxBlocksJob(
+            start_block=start_block,
+            end_block=end_block,
+            zilliqa_api=self.api,
+            max_workers=self.max_workers,
+            item_exporter=self.item_exporter,
+        )
         job.run()
 
     def close(self):

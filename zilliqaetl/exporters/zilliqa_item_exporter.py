@@ -115,7 +115,7 @@ def get_streamer_exporter(output, topic_prefix, topic_suffix):
         item_exporter = KafkaItemExporter(item_type_to_topic_mapping={
             "transaction": topic_prefix + "-transactions-" + topic_suffix,
             "token_transfer": topic_prefix + "-token_transfers-" + topic_suffix,
-            "trace": topic_prefix + "-traces-" + topic_suffix,
+            "transition": topic_prefix + "-transitions-" + topic_suffix,
             "tx_block": topic_prefix + "-tx_blocks-" + topic_suffix,
         })
 
