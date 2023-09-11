@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import logging
-import random
 
 import click
 
@@ -63,9 +62,9 @@ def stream(last_synced_block_file, lag, provider_uri, output, topic_prefix, topi
     if rate_limit is not None and rate_limit > 0:
         zilliqa_api = RateLimitingProxy(zilliqa_api, max_per_second=rate_limit)
 
-    entity_types = parse_entity_types(entity_types)
+    # entity_types = parse_entity_types(entity_types)
 
-    from zilliqaetl.exporters.zilliqa_item_exporter import get_item_exporter
+    # from zilliqaetl.exporters.zilliqa_item_exporter import get_item_exporter
     from blockchainetl.streaming.streamer import Streamer
 
     logging.info('Using ' + provider_uri)

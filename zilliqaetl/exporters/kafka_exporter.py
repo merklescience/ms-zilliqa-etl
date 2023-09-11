@@ -1,5 +1,5 @@
 import os
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaException
 from timeout_decorator import timeout_decorator
 
 import logging
@@ -54,7 +54,7 @@ class KafkaItemExporter:
             data = json.dumps(item).encode("utf-8")
             self.write_txns(key=item.get("token_address"), value=data.decode("utf-8"), topic=topic)
         else:
-            logging.error('Topic for item type "{item_type}" is not configured.')
+            logging.error(f'Topic for item type {item_type} is not configured.')
 
     def get_message_attributes(self, item):
         attributes = {}
@@ -70,13 +70,17 @@ class KafkaItemExporter:
         pass
 
     def write_txns(self, key: str, value: str, topic: str):
-        def acked(err, msg):
-            if err is not None:
-                self.logging.error('%% Message failed delivery: %s\n' % err)
+        # def acked(err, msg):
+        #     if err is not None:
+        #         self.logging.error(f' Message failed delivery, {topic} : {err}\n')
 
         try:
-            self.producer.produce(topic, key=key, value=value, callback=acked)
+            self.producer.produce(topic, key=key, value=value)
         except BufferError:
             self.logging.error('%% Local producer queue is full (%d messages awaiting delivery): try again\n' %
                                len(self.producer))
+        except KafkaException as e:
+            self.logging.error(f"Kafka Exception for topic : {topic} , exception : {e}")
+        except NotImplementedError as e:
+            self.logging.error(f"NotImplementedError for topic : {topic} , exception : {e}")
         self.producer.poll(0)

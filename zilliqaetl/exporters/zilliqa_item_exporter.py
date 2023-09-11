@@ -116,6 +116,7 @@ def get_streamer_exporter(output, topic_prefix, topic_suffix):
             "transaction": topic_prefix + "-transactions-" + topic_suffix,
             "token_transfer": topic_prefix + "-token_transfers-" + topic_suffix,
             "trace": topic_prefix + "-traces-" + topic_suffix,
+            "tx_block": topic_prefix + "-tx_blocks-" + topic_suffix,
         })
 
     return item_exporter
