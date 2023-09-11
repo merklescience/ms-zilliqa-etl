@@ -78,7 +78,7 @@ class ExportTxBlocksJob(BaseJob):
         for number in block_number_batch:
             tx_block = map_tx_block(self.zilliqa_service.get_tx_block(number))
 
-            txns = list(self.zilliqa_service.get_transactions(number)) if tx_block.get('num_transactions') > 0 else []
+            txns = list(self.zilliqa_service.get_transactions(number)) if tx_block.pop('num_transactions') > 0 else []
             if self._should_export_transactions():
                 for txn in txns:
                     items.append(map_transaction(tx_block, txn))

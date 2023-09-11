@@ -48,7 +48,6 @@ class ZilliqaStreamerAdapter:
             export_exceptions=False,
             export_event_logs=False,
             export_transactions=True,
-            export_traces=True,
             export_token_transfers=True,
             export_transitions=False,
             item_exporter=self.item_exporter,

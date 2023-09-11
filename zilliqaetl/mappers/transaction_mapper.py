@@ -28,7 +28,7 @@ def map_transaction(tx_block, txn):
     block = {
         'type': 'transaction',
         'token_address': '0x0000',
-        'id': {txn.get("ID")},
+        'id': txn.get("ID"),
         'block_number': tx_block.get('number'),
         'block_timestamp': tx_block.get('timestamp'),
         'amount': txn.get('amount'),
