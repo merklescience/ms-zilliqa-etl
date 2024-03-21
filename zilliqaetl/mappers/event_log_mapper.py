@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from zilliqaetl.utils.zilliqa_utils import to_int, json_dumps, iso_datetime_string, encode_bech32_address
+from zilliqaetl.utils.zilliqa_utils import json_dumps, encode_bech32_address
 
 
 def map_event_logs(tx_block, txn):
@@ -35,5 +35,5 @@ def map_event_logs(tx_block, txn):
                 'index': index,
                 'address': encode_bech32_address(event_log.get('address')),
                 'event_name': event_log.get('_eventname'),
-                'params': [json_dumps(param) for param in event_log.get('params')]
+                'params': [json_dumps(param) for param in event_log.get('params', [])]
             }

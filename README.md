@@ -21,6 +21,23 @@ Export directory service blocks ([Schema](../docs/schema.md), [Reference](../doc
 --output-dir output --provider-uri https://api.zilliqa.com
 ```
 
+To run locally 
+```bash
+python3 setup.py sdist bdist_wheel
+pip3 install dist/zilliqa-etl-1.0.6.tar.gz
+doppler run -- zilliqaetl stream --provider-uri https://api.zilliqa.com -o kafka -t producer-zilliqa -ts hot 
+```
+While running/setting up on linux do this 
+```bash
+sudo apt-get install build-essential libssl-dev libffi-dev python3-dev
+```
+
+Setup doppler
+```
+doppler configure set token <token>
+```
+
+
 Find other commands [here](https://zilliqa-etl.readthedocs.io/en/latest/commands/).
 
 For the latest version, check out the repo and call 

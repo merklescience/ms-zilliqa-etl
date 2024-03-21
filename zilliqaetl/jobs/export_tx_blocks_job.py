@@ -46,9 +46,9 @@ class ExportTxBlocksJob(BaseJob):
             export_event_logs=True,
             export_exceptions=True,
             export_transitions=True,
-            export_token_transfers=True,
-            export_traces=True
+            export_token_transfers=True
     ):
+        self.export_token_transfers = export_token_transfers
         validate_range(start_block, end_block)
         self.start_block = start_block
         self.end_block = end_block
@@ -62,15 +62,11 @@ class ExportTxBlocksJob(BaseJob):
         self.export_event_logs = export_event_logs
         self.export_exceptions = export_exceptions
         self.export_transitions = export_transitions
-        self.export_token_transfers = export_token_transfers
-        self.export_traces = export_traces
 
     def _start(self):
         self.item_exporter.open()
-        pass
 
     def _export(self):
-        """This method is called on job.run()"""
         self.batch_work_executor.execute(
             range(self.start_block, self.end_block + 1),
             self._export_batch,
@@ -81,8 +77,8 @@ class ExportTxBlocksJob(BaseJob):
         items = []
         for number in block_number_batch:
             tx_block = map_tx_block(self.zilliqa_service.get_tx_block(number))
-            num_txns: int = tx_block['num_transactions']
-            txns = list(self.zilliqa_service.get_transactions(number)) if num_txns > 0 else []
+
+            txns = list(self.zilliqa_service.get_transactions(number)) if tx_block.pop('num_transactions') > 0 else []
             if self._should_export_transactions():
                 for txn in txns:
                     items.append(map_transaction(tx_block, txn))
@@ -94,26 +90,24 @@ class ExportTxBlocksJob(BaseJob):
                         items.extend(map_transitions(tx_block, txn))
                     if self._should_export_token_transfers(txn):
                         token_transfers = []
-                        token_transfers.extend(map_token_traces(tx_block, txn, txn_type="token_transfer"))
+                        token_transfers.extend(map_token_traces(tx_block, txn))
                         # Since duplicate can happen for combination of "from_address", "to_address", "value",
                         # "call_type", "transaction_hash"
-                        dedup_token_transfers = {token["log_index"]: {"call_type": token["call_type"],
-                                                                      "from_address": token["from_address"],
-                                                                      "to_address": token["to_address"],
-                                                                      "transaction_hash": token["transaction_hash"],
-                                                                      "value": token["value"],
-                                                                      "token_address": token["token_address"]}
-                                                 for token in token_transfers}
-                        unique_token_transfers = {}
-                        for key, token_value in dedup_token_transfers.items():
-                            if token_value not in unique_token_transfers.values():
-                                unique_token_transfers[key] = token_value
-                        token_transfers = [token_transfer for token_transfer in token_transfers if
-                                           token_transfer["log_index"] in unique_token_transfers.keys()]
+                        # dedup_token_transfers = {token["log_index"]: {"call_type": token["call_type"],
+                        #                                               "from_address": token["from_address"],
+                        #                                               "to_address": token["to_address"],
+                        #                                               "transaction_hash": token["transaction_hash"],
+                        #                                               "value": token["value"],
+                        #                                               "token_address": token["token_address"]}
+                        #                          for token in token_transfers}
+                        # unique_token_transfers = {}
+                        # for key, token_value in dedup_token_transfers.items():
+                        #     if token_value not in unique_token_transfers.values():
+                        #         unique_token_transfers[key] = token_value
+                        # token_transfers = [token_transfer for token_transfer in token_transfers if
+                        #                    token_transfer["log_index"] in unique_token_transfers.keys()]
                         items.extend(token_transfers)
-                    if self._should_export_traces(txn):
-                        items.extend(map_token_traces(tx_block, txn, txn_type="trace"))
-            tx_block['num_present_transactions'] = len(txns)
+            # tx_block['num_present_transactions'] = len(txns)
             items.append(tx_block)
 
         for item in items:
@@ -134,8 +128,8 @@ class ExportTxBlocksJob(BaseJob):
     def _should_export_token_transfers(self, txn):
         return self.export_token_transfers and txn.get('receipt')
 
-    def _should_export_traces(self, txn):
-        return self.export_traces and txn.get('receipt')
+    # def _should_export_traces(self, txn):
+    #     return self.export_traces and txn.get('receipt')
 
     def _end(self):
         self.batch_work_executor.shutdown()

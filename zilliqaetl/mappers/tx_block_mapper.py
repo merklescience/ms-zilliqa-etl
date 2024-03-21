@@ -25,25 +25,26 @@ from zilliqaetl.utils.zilliqa_utils import to_int, iso_datetime_string, encode_b
 
 def map_tx_block(raw_block):
     header = raw_block.get('header')
-    body = raw_block.get('body')
+    # body = raw_block.get('body')
     block = {
         'type': 'tx_block',
+        'token_address': '0x0000',
         'number': to_int(header.get('BlockNum')),
-        'ds_block_number': to_int(header.get('DSBlockNum')),
+        # 'ds_block_number': to_int(header.get('DSBlockNum')),
         'timestamp': iso_datetime_string(header.get('Timestamp')),
-        'version': header.get('Version'),
-        'gas_limit': to_int(header.get('GasLimit')),
-        'gas_used': to_int(header.get('GasUsed')),
-        'mb_info_hash': header.get('MbInfoHash'),
-        'tx_leader_pub_key': header.get('MinerPubKey'),
+        # 'version': header.get('Version'),
+        # 'gas_limit': to_int(header.get('GasLimit')),
+        # 'gas_used': to_int(header.get('GasUsed')),
+        # 'mb_info_hash': header.get('MbInfoHash'),
+        # 'tx_leader_pub_key': header.get('MinerPubKey'),
         'tx_leader_address': encode_bech32_pub_key(header.get('MinerPubKey')),
-        'num_micro_blocks': to_int(header.get('NumMicroBlocks')),
+        # 'num_micro_blocks': to_int(header.get('NumMicroBlocks')),
         'num_transactions': to_int(header.get('NumTxns')),
-        'prev_block_hash': header.get('PrevBlockHash'),
-        'rewards': to_int(header.get('Rewards')),
-        'state_delta_hash': header.get('StateDeltaHash'),
-        'state_root_hash': header.get('StateRootHash'),
-        'header_signature': body.get('HeaderSign')
+        # 'prev_block_hash': header.get('PrevBlockHash'),
+        'rewards': header.get('Rewards'),
+        # 'state_delta_hash': header.get('StateDeltaHash'),
+        # 'state_root_hash': header.get('StateRootHash'),
+        # 'header_signature': body.get('HeaderSign')
     }
 
     return block
